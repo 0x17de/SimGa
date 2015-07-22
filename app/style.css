@@ -1,0 +1,76 @@
+html,body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Verdana, Geneva, sans-serif;
+}
+
+/* === HEADER === */
+#header {
+    width: 100%;
+    height: 20pt;
+    background: #1c2434;
+}
+#location {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    list-style-image: none;
+    text-align: center;
+}
+#location li {
+    font-size: 8pt;
+    margin: 4pt 0;
+    padding: 0.1em 0.2em;
+    display: inline-block;
+    color: #fff;
+    background: #2c3444;
+    border: 0.1em solid;
+    border-radius: 0.3em;
+}
+#location li:nth-child(2n) {
+    border: none;
+    background: none;
+}
+#location ul li:nth-child(2n+1):hover {
+    color: #000;
+    background: #fff;
+    cursor: pointer;
+}
+
+/* === VIEW === */
+#view {
+    width: 100%;
+    height: calc(100% - 50pt);
+    background: #fff;
+}
+
+/* === FOOTER === */
+#footer {
+    width: 100%;
+    height: 30pt;
+    background: #1c2434;
+}
+
+/* === LOADING === */
+#loading {
+    position: absolute;
+    top: calc(50% - 1.5em);
+    left: calc(50% - 1.5em);
+    background-image: url(ajax-loader.gif);
+    background-size: 4em;
+    width: 4em;
+    height: 1em;
+}
+
+/* === ERROR PAGE === */
+#oops {
+    position: absolute;
+    display: none;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+}
