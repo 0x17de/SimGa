@@ -72,7 +72,6 @@ function loadImageDetails($other) {
         die("Type of file '$name' not supported.");
     }
 
-    // @TODO: read exif information from file
     $exif = exif_read_data($filepath);
     echo json_encode($exif);
 }
