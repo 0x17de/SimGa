@@ -118,11 +118,11 @@ if (isset($_GET['rest'])) {
     // handle request otherwise abort
     if (!handleRestApi($root, $other, 'GET')) {
         http_response_code(400);
-        die("Unknown api request");
+        die("Unknown GET api request");
     }
 } else {
-    // If no rest request, then just echo the template
-    readfile("template.html");
+    http_response_code(400);
+    die("Unknown api request");
 }
 
 
