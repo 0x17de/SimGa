@@ -27,6 +27,8 @@ html,body {
     color: #fff;
     background: #2c3444;
     border: 0.1em solid;
+    -webkit-border-radius: 0.3em;
+    -moz-border-radius: 0.3em;
     border-radius: 0.3em;
 }
 #location li:nth-child(2n) {
@@ -43,7 +45,55 @@ html,body {
 #view {
     width: 100%;
     height: calc(100% - 50pt);
+    overflow: auto;
     background: #fff;
+}
+.imagebox {
+    cursor: pointer;
+    margin: 1em;
+    float: left;
+    width: 10em;
+    height: 10em;
+    border: 1px solid #aaa;
+    background-color: #eee;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+}
+.imagebox:hover {
+    background-color:#ffe45c;
+}
+
+/* === LIGHTBOX === */
+#lightbox {
+    display: none;
+}
+#lightbox, #lightbox_background {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+}
+#lightbox_background {
+    background: #222;
+    opacity: 0.8;
+}
+#lightbox_image {
+    position: absolute;
+    left: 2em;
+    top: 2em;
+    height: calc(100% - 4em);
+    width: calc(100% - 4em);
+    background-color: #000;
+    border: 0.3em solid #fff;
+    border-radius: 0.1em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 /* === FOOTER === */
@@ -58,10 +108,14 @@ html,body {
     position: absolute;
     top: calc(50% - 1.5em);
     left: calc(50% - 1.5em);
+    border-radius: 2em;
+    background-color: #fff;
     background-image: url(ajax-loader.gif);
     background-size: 4em;
-    width: 4em;
-    height: 1em;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 6em;
+    height: 2em;
 }
 
 /* === ERROR PAGE === */

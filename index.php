@@ -40,7 +40,7 @@ function hasKnownImageExtension($filename) {
 }
 // == Assertions
 function assertAllowedFilePath($name) {
-    if (!preg_match('/^([a-zA-Z0-9_-][a-zA-Z0-9\/_-]*|)$/', $name)) {
+    if (!preg_match('/^([a-zA-Z0-9_-]([a-zA-Z0-9\/_-]\.?)*|)$/', $name)) {
         http_response_code(400);
         die("Forbidden path: $name");
     }
@@ -65,11 +65,15 @@ function assertIsFile($path) {
 function loadImageDetails($other) {
     // Only allow specific paths
     assertAllowedFilePath($other);
-    $path = addTrailingSlash(getBaseImagePath().$other);
-    assertIsFile($path);
+    $filepath = getBaseImagePath().$other;
+    assertIsFile($filepath);
+    if (!hasKnownImageExtension($filepath)) {
+        http_response_code(500);
+        die("Type of file '$name' not supported.");
+    }
 
     // @TODO: read exif information from file
-    $exif = array('EXIF' => null);
+    $exif = exif_read_data($filepath);
     echo json_encode($exif);
 }
 
@@ -83,12 +87,13 @@ function loadImages($other) {
     // List all images in directory with selected properties
     $dir = opendir($path);
     while($filename = readdir($dir)) {
-        $filepath = "$path$filename";
+        $filepath = $path.$filename;
         if (!is_file($filepath))
             continue;
         if (!hasKnownImageExtension($filename))
             continue;
-        array_push($result['images'], array('filename' => $filename, 'width' => null, 'height' => null, 'name' => null));
+        $size = getimagesize($filepath);
+        array_push($result['images'], array('filename' => $filename, 'width' => $size[0], 'height' => $size[1], 'name' => null));
     }
 
     echo json_encode($result);

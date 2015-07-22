@@ -1,11 +1,26 @@
 loadCount = 1;
 function setLoading(bLoading) {
     loadCount += bLoading ? 1 : -1;
-    if (loadCount == 1) {
+    if (loadCount >= 1) {
         $('#loading').show();
     } else {
         $('#loading').hide();
     }
+}
+
+function showImage(path, image) {
+    var imagepath = path + image.filename;
+
+    // Loading notification
+    var img = $('<img/>');
+    setLoading(true);
+    img.load(function() { setLoading(false); });
+    img.attr('src', imagepath);
+
+    $('#lightbox_image').css({
+        'backgroundImage': 'url('+imagepath+')'
+    });
+    $('#lightbox').show();
 }
 
 function displayImages(data) {
@@ -18,12 +33,14 @@ function displayImages(data) {
         return 0;
     });
 
-    for (var i = 0; i < data.images.length; ++i) {
-        var image = data.images[i];
-        var preview = $('<div id="image"/>');
-        preview.text(image.filename || image.name);
+    $(data.images).each(function(i, image) {
+        var preview = $('<div class="imagebox"/>');
+        preview.css({
+            backgroundImage:'url('+data.path+'/_thumbs/'+image.filename+')',
+        });
+        preview.click(function() { showImage(data.path, image); });
         $('#view').append(preview);
-    }
+    });
 }
 
 $(function() {
@@ -40,4 +57,5 @@ $(function() {
             $('#oops').show();
         }
     });
+    $('#lightbox').click(function() { $(this).hide(); });
 })
