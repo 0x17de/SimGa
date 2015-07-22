@@ -5,7 +5,8 @@
 
 // Things that are handled
 $restApi = array(
-    'images' => array('GET' => 'loadImages')
+    'images' => array('GET' => 'loadImages'),
+    'image_details' => array('GET' => 'loadImageDetails')
 );
 // Probe for handler
 function handleRestApi($root, $other, $method) {
@@ -23,25 +24,59 @@ function handleRestApi($root, $other, $method) {
     return false;
 }
 
-// === REST handler
+// === Utils
 
-function loadImages($other) {
-    // Only allow specific paths
-    if (!preg_match('/^([a-zA-Z0-9_-][a-zA-Z0-9\/_-]*|)$/', $other)) {
-        http_response_code(400);
-        die("Forbidden path: $other");
-    }
-
+function getBaseImagePath() {
+    return "./images/";
+}
+function addTrailingSlash($path) {
     // Add trailing slash
-    $path = "./images/$other";
     if ($path[strlen($path)-1] !== "/")
         $path += "/";
-
+    return $path;
+}
+function hasKnownImageExtension($filename) {
+    return preg_match("/(jpg|png)$/i", $filename);
+}
+// == Assertions
+function assertAllowedFilePath($name) {
+    if (!preg_match('/^([a-zA-Z0-9_-][a-zA-Z0-9\/_-]*|)$/', $name)) {
+        http_response_code(400);
+        die("Forbidden path: $name");
+    }
+}
+function assertIsDir($path) {
     // Folder can be found?
     if (!is_dir($path)) {
         http_response_code(404);
-        die("The selected folder was not found: $other");
+        die("The selected folder was not found: $path");
     }
+}
+function assertIsFile($path) {
+    // Folder can be found?
+    if (!is_file($path)) {
+        http_response_code(404);
+        die("The selected file was not found: $path");
+    }
+}
+
+// === REST handler
+
+function loadImageDetails($other) {
+    // Only allow specific paths
+    assertAllowedFilePath($other);
+    $path = addTrailingSlash(getBaseImagePath().$other);
+    assertIsFile($path);
+
+    // @TODO: read exif information from file
+    $exif = array('EXIF' => null);
+    echo json_encode($exif);
+}
+
+function loadImages($other) {
+    assertAllowedFilePath($other);
+    $path = addTrailingSlash(getBaseImagePath().$other);
+    assertIsDir($path);
 
     $result = array('path' => $path, 'images' => array());
 
@@ -51,12 +86,10 @@ function loadImages($other) {
         $filepath = "$path$filename";
         if (!is_file($filepath))
             continue;
-        if (!preg_match("/(jpg|png)$/i", $filename))
+        if (!hasKnownImageExtension($filename))
             continue;
-        array_push($result['images'], array('filename' => $filename, 'EXIF' => null, 'name' => null));
+        array_push($result['images'], array('filename' => $filename, 'width' => null, 'height' => null, 'name' => null));
     }
-
-    // @TODO: put EXIF information into array
 
     echo json_encode($result);
 }
