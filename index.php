@@ -11,7 +11,9 @@ $restApi = array(
 function handleRestApi($root, $other, $method) {
     global $restApi;
     foreach ($restApi as $restRequest => $methodHandler) {
+        // Is requested api?
         if ($root == $restRequest) {
+            // Requested method (GET/POST/PUT/DELETE) exists?
             if (!$methodHandler[$method])
                 return false;
             call_user_func($methodHandler[$method], $other);
@@ -24,16 +26,18 @@ function handleRestApi($root, $other, $method) {
 // === REST handler
 
 function loadImages($other) {
-    $path = "./$other";
+    // Only allow specific paths
     if (!preg_match('/^([a-zA-Z0-9_-][a-zA-Z0-9\/_-]*|)$/', $other)) {
         http_response_code(400);
         die("Forbidden path: $other");
     }
+
+    // Add trailing slash
     $path = "./images/$other";
     if ($path[strlen($path)-1] !== "/")
         $path += "/";
 
-
+    // Folder can be found?
     if (!is_dir($path)) {
         http_response_code(404);
         die("The selected folder was not found: $other");
