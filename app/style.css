@@ -35,7 +35,7 @@ html,body {
     border: none;
     background: none;
 }
-#location ul li:nth-child(2n+1):hover {
+#location li:nth-child(2n+1):hover {
     color: #000;
     background: #fff;
     cursor: pointer;
