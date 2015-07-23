@@ -32,7 +32,7 @@ function getBaseImagePath() {
 function addTrailingSlash($path) {
     // Add trailing slash
     if ($path[strlen($path)-1] !== "/")
-        $path += "/";
+        $path .= "/";
     return $path;
 }
 function hasKnownImageExtension($filename) {
@@ -59,6 +59,14 @@ function assertIsFile($path) {
         die("The selected file was not found: $path");
     }
 }
+function getCoverForFolder($folder) {
+    $dir = opendir($folder);
+    while ($filename = readdir($dir)) {
+        if (is_file($folder.'/'.$filename) && hasKnownImageExtension($filename))
+            return $filename;
+    }
+    return null;
+}
 
 // === REST handler
 
@@ -69,7 +77,7 @@ function loadImageDetails($other) {
     assertIsFile($filepath);
     if (!hasKnownImageExtension($filepath)) {
         http_response_code(500);
-        die("Type of file '$name' not supported.");
+        die("Type of file '$other' not supported.");
     }
 
     $exif = exif_read_data($filepath);
@@ -81,18 +89,24 @@ function loadImages($other) {
     $path = addTrailingSlash(getBaseImagePath().$other);
     assertIsDir($path);
 
-    $result = array('path' => $path, 'images' => array());
+    $result = array('path' => $path, 'images' => array(), 'folders' => array());
 
     // List all images in directory with selected properties
     $dir = opendir($path);
-    while($filename = readdir($dir)) {
+    while ($filename = readdir($dir)) {
+        if (strlen($filename) == 0 || $filename[0] == "." || $filename[0] == "_") continue;
+
         $filepath = $path.$filename;
-        if (!is_file($filepath))
-            continue;
-        if (!hasKnownImageExtension($filename))
-            continue;
-        $size = getimagesize($filepath);
-        array_push($result['images'], array('filename' => $filename, 'width' => $size[0], 'height' => $size[1], 'name' => null));
+        if (is_file($filepath)) {
+            if (!hasKnownImageExtension($filename))
+                continue;
+            $size = getimagesize($filepath);
+            array_push($result['images'], array('filename' => $filename, 'width' => $size[0], 'height' => $size[1], 'name' => null));
+        } elseif (is_dir($filepath)) {
+            $coverFilename = getCoverForFolder($filepath);
+            if ($coverFilename != null)
+                array_push($result['folders'], array('name' => $filename, 'cover' => $coverFilename)); // @TODO: add first or configured image as folder image
+        }
     }
 
     echo json_encode($result);

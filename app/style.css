@@ -48,14 +48,13 @@ html,body {
     overflow: auto;
     background: #fff;
 }
-.imagebox {
+.imagebox, .folderbox {
     cursor: pointer;
     margin: 1em;
     float: left;
     width: 10em;
     height: 10em;
     border: 1px solid #aaa;
-    background-color: #eee;
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
@@ -63,8 +62,25 @@ html,body {
     -moz-border-radius: 0.5em;
     border-radius: 0.5em;
 }
-.imagebox:hover {
+.imagebox {
+    background-color: #eee;
+}
+.folderbox {
+    background-color: #eee;
+    position: relative;
+}
+.folderbox:hover, .imagebox:hover {
     background-color:#ffe45c;
+}
+.foldertitle {
+    text-align: center;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    padding: 4pt 0;
+    background: #eee;
+    border-radius: 0 0 0.5em 0.5em;
+    font-size: 9pt;
 }
 
 /* === LIGHTBOX === */
